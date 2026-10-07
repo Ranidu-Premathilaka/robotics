@@ -20,9 +20,10 @@ def turn_right(robot,previous_light_state):
         robot.drive(10,110)
         wait(100)
 
-def backward(robot, previous_light_state,mode):
+def backward(robot, previous_light_state, edge):
+    turn_dir = -1 if edge == 'INNER_EDGE' else 1
     for i in range(5):
-        robot.turn((-1 if mode else 1) *TURN_ANGLE * 10)
+        robot.turn(turn_dir * TURN_ANGLE * 10)
     #     ev3.speaker.beep()
     # ev3.speaker.beep()
 
@@ -30,7 +31,7 @@ def backward(robot, previous_light_state,mode):
         light_sensor.reflection() > BLACK_VALUE
         and light_sensor.reflection() < WHITE_VALUE
     ):
-        robot.turn((-1 if mode else 1) * TURN_ANGLE*10)
+        robot.turn(turn_dir * TURN_ANGLE * 10)
         # ev3.speaker.beep()
 
 

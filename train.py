@@ -2,16 +2,18 @@ import random
 
 from config import ALPHA, GAMMA, E, TEMP
 from hardware import ev3, robot, get_light_state
-from actions import actions
-from q_learning import new_q_table, save_q_dict, get_reward, get_best_action, update_mode
+from q_learning import (
+    new_q_table, save_q_dict, get_reward, get_best_action,
+    update_edge, light_state_to_position, resolve_action,
+    semantic_actions, INNER_EDGE
+)
 
 
 def learn():
     Q_table = new_q_table()
     light_state = get_light_state()
-    mode = True
+    edge = INNER_EDGE
     iterations = 0
-    action = None
 
     while True:
         # Exploration vs. Exploitation
@@ -19,34 +21,39 @@ def learn():
             save_q_dict(Q_table)
             break
 
-        if random.uniform(0, 1) <  E**(iterations/-TEMP):
-            action = random.choice(actions)  # Explore by choosing a random action
-            print("random", action.__name__, mode)
-        else:
-            action = get_best_action(Q_table, mode,light_state)[0]  # Exploit by choosing the action with the highest Q-value
-            print("greedy", action.__name__ , mode)
+        position = light_state_to_position(light_state)
 
-        action(robot, light_state)  # Execute the action and wait for the robot to finish
+        if random.uniform(0, 1) < E**(iterations/-TEMP):
+            sem_action = random.choice(semantic_actions)  # Explore by choosing a random action
+            print("random", sem_action, edge)
+        else:
+            sem_action = get_best_action(Q_table, position)[0]  # Exploit by choosing the best action
+            print("greedy", sem_action, edge)
+
+        # Resolve to physical action and execute
+        physical_action = resolve_action(sem_action, edge)
+        physical_action(robot, light_state)  # Execute the action and wait for the robot to finish
 
         new_light_state = get_light_state()
-        new_mode = update_mode(mode, light_state, action, new_light_state)
+        new_edge = update_edge(edge, light_state, physical_action, new_light_state)
+        new_position = light_state_to_position(new_light_state)
 
         # Calculate max Q-value for the new state
-        max_q_next = get_best_action(Q_table, new_mode, new_light_state)[1]
+        max_q_next = get_best_action(Q_table, new_position)[1]
 
         # Calculate reward for the new state
-        reward_next = get_reward(new_light_state)
+        reward_next = get_reward(new_position)
 
         # Update Q-table
-        Q_table[(mode, light_state, action)] += ALPHA * (reward_next + GAMMA * max_q_next - Q_table[( mode, light_state, action)])
+        Q_table[(position, sem_action)] += ALPHA * (reward_next + GAMMA * max_q_next - Q_table[(position, sem_action)])
 
         # Print iteration number on the EV3 screen
         ev3.screen.clear()
-        ev3.screen.draw_text(30,40,iterations)
-        ev3.screen.draw_text(20,50,E**(iterations/-TEMP))
+        ev3.screen.draw_text(30, 40, iterations)
+        ev3.screen.draw_text(20, 50, E**(iterations/-TEMP))
 
         light_state = new_light_state
-        mode = new_mode
+        edge = new_edge
         iterations += 1
 
         save_q_dict(Q_table)
