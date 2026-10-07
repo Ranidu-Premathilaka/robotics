@@ -8,7 +8,7 @@ from q_learning import (
 
 
 def obstacle_avoidance(edge):
-    backward(robot, light_sensor, edge)
+    pass
 
 def line_following(Q_table, edge, light_state):
     position = light_state_to_position(light_state)

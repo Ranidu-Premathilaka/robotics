@@ -20,23 +20,14 @@ def turn_right(robot,previous_light_state):
         robot.drive(10,110)
         wait(100)
 
-def backward(robot, previous_light_state, edge):
-    turn_dir = -1 if edge == 'INNER_EDGE' else 1
-    for i in range(5):
-        robot.turn(turn_dir * TURN_ANGLE * 10)
-    #     ev3.speaker.beep()
-    # ev3.speaker.beep()
-
-    while not (
-        light_sensor.reflection() > BLACK_VALUE
-        and light_sensor.reflection() < WHITE_VALUE
-    ):
-        robot.turn(turn_dir * TURN_ANGLE * 10)
-        # ev3.speaker.beep()
+def backward(robot, previous_light_state):
+    speed = min(max(100, (robot.state()[1])) + 5, 180)
+    robot.drive(-speed, 0)
+    wait(250)
 
 
 # Actions the agent can choose from (order matters for tie-breaking)
-actions = [forward, turn_left, turn_right]
+actions = [forward, turn_left, turn_right, backward]
 
 # Lookup used when loading a saved Q-table, which stores actions by name
 actions_by_name = {act.__name__: act for act in actions}

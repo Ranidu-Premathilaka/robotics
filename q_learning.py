@@ -1,13 +1,13 @@
 import pickle
 
 from config import Q_TABLE_FILE
-from actions import forward, turn_left, turn_right
+from actions import forward, turn_left, turn_right, backward
 
 # Positional states relative to the line
 states = ['INNER', 'EDGE', 'OUTER']
 
 # Semantic actions the agent can choose from
-semantic_actions = ['GOTO_INNER', 'STAY', 'GOTO_OUTER']
+semantic_actions = ['GOTO_INNER', 'STAY', 'GOTO_OUTER', 'BACKWARD']
 
 # Which edge of the line the robot is following
 INNER_EDGE = 'INNER_EDGE'
@@ -56,9 +56,12 @@ def resolve_action(semantic_action, edge):
 
     INNER_EDGE: line is to the left  -> turn_left = GOTO_INNER, turn_right = GOTO_OUTER
     OUTER_EDGE: line is to the right -> turn_right = GOTO_INNER, turn_left = GOTO_OUTER
+    BACKWARD:   turn around and find the line edge again (reverses direction)
     """
     if semantic_action == 'STAY':
         return forward
+    if semantic_action == 'BACKWARD':
+        return backward
     if edge == INNER_EDGE:
         return turn_left if semantic_action == 'GOTO_INNER' else turn_right
     else:  # OUTER_EDGE

@@ -43,6 +43,8 @@ def learn():
 
         # Calculate reward for the new state
         reward_next = get_reward(new_position)
+        if sem_action == 'BACKWARD':
+            reward_next -= 15  # Backward is a costly recovery action, penalise to ensure it's learned as suboptimal
 
         # Update Q-table
         Q_table[(position, sem_action)] += ALPHA * (reward_next + GAMMA * max_q_next - Q_table[(position, sem_action)])
