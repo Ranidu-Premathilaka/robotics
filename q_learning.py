@@ -40,6 +40,20 @@ def save_q_dict(q_dict):
 def load_q_dict():
     with open(Q_TABLE_FILE, 'rb') as file:
         return pickle.load(file)
+    # return {
+    #     ('INNER', 'GOTO_INNER'): 2.837709619443845,
+    #     ('INNER', 'STAY'): -2.6883360619996886,
+    #     ('INNER', 'GOTO_OUTER'): 4.689822353593674,
+    #     ('EDGE', 'GOTO_INNER'): -4.316639923684309,
+    #     ('EDGE', 'STAY'): -0.6116862474463062,
+    #     ('EDGE', 'GOTO_OUTER'): -3.835948348508034,
+    #     ('OUTER', 'GOTO_INNER'): 4.756803181982659,
+    #     ('OUTER', 'STAY'): -1.7457815304375115,
+    #     ('OUTER', 'GOTO_OUTER'): 4.082176950978683,
+    #     ('INNER', 'BACKWARD'): -12.688336061999689,
+    #     ('EDGE', 'BACKWARD'): -14.31663992368431,
+    #     ('OUTER', 'BACKWARD'): -11.745781530437512,
+    # }
 
 
 def light_state_to_position(light_state):

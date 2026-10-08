@@ -9,7 +9,7 @@ from config import WHITE_VALUE, BLACK_VALUE
 ev3 = EV3Brick()
 left_motor = Motor(Port.A)
 right_motor = Motor(Port.D)
-light_sensor = ColorSensor(Port.S2)
+light_sensor = ColorSensor(Port.S1)
 ir_sensor = InfraredSensor(Port.S4)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=40, axle_track=50)
 
